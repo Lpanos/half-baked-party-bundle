@@ -371,6 +371,13 @@ textarea {
   margin-bottom: 1rem;
   word-break: break-word;
 }
+.tel-prev-text.tel-meta-prompt {
+  border-left-color: var(--gold);
+  background: #1f1c10;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--gold);
+}
 
 .tel-vote-options {
   display: flex;

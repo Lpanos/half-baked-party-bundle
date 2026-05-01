@@ -1,10 +1,15 @@
-// Telephone — simultaneous rotation model.
+// Telephone — simultaneous rotation model with player-generated content.
 //
 // At the start of a set, every player gets their own chain and a unique
-// prompt. Each round, ALL players write simultaneously; chains rotate
-// cyclically so the next round each player receives a different player's
-// previous text. The last round is the guess phase: players see the most
-// compressed fragment and try to guess the original prompt.
+// META-PROMPT (a creative direction like "An inside joke" or "Describe
+// your job but make it sound illegal"). Round 0 the player writes their
+// OWN 12-word response to that meta-prompt — that personal text becomes
+// the seed of the chain. Each subsequent round, ALL players write
+// simultaneously; chains rotate cyclically so each player receives a
+// different player's previous text. Mid-chain players never see the
+// meta-prompt, only the previous link's text. The final round is the
+// guess phase: players see the most compressed fragment and try to
+// reconstruct what Player 1 ORIGINALLY wrote.
 //
 // Cyclic rotation: chain index for player position p in round r is
 // `(p - r + N) % N`. Total rounds = (rewrite rounds) + 1 (guess).
@@ -87,19 +92,21 @@ function beginAssign(room, io) {
   const prompts = pickPrompts(gs.promptPool, N);
   gs.chains = gs.playerOrder.map((pid, i) => {
     const promptObj = prompts[i];
-    const text = typeof promptObj === 'string' ? promptObj : (promptObj?.text || 'A vivid scenario');
+    const text = typeof promptObj === 'string' ? promptObj : (promptObj?.text || 'A creative direction');
     return {
       id: `tel_c${gs.currentSet}_${i}`,
       starterId: pid,
       starterName: room.players.find(pp => pp.id === pid)?.name || 'Unknown',
-      prompt: text,
-      links: [], // each entry: { round, playerId, playerName, wordLimit, text }
-      contributorIds: new Set([pid]) // accumulated set; the starter doesn't write Round 1 here, so we'll add them as they touch the chain
+      metaPrompt: text,            // the guidance shown to round 0's player
+      originalResponse: '',         // populated after round 0; what Player 1 wrote
+      links: [],                    // each entry: { round, playerId, playerName, wordLimit, text }
+      contributorIds: new Set([pid])
     };
   });
-  // Note: a chain's "starter" doesn't actually write in round 0 — they describe
-  // their *own* prompt. We still want the starter counted as a chain member
-  // for scoring. (They are.)
+  // The chain "starter" is whoever happens to be assigned to this chain in
+  // round 0 — that player both sees the meta-prompt and writes the seed
+  // response. With our cyclic rotation, that's the player at the same
+  // position as the chain index in round 0.
 
   io.to(room.code + ':host').emit('tel_assign', {
     setNum: gs.currentSet + 1,
@@ -144,8 +151,11 @@ function startRound(room, io) {
 
     let previousText;
     if (r === 0) {
-      previousText = chain.prompt;
+      // Round 0: player sees the meta-prompt and writes their own response.
+      previousText = chain.metaPrompt;
     } else {
+      // Subsequent rounds: player sees only the previous link's text. They
+      // never see the meta-prompt.
       previousText = chain.links[r - 1]?.text || '[no response]';
     }
 
@@ -205,6 +215,7 @@ function submitLink(room, socket, payload, io) {
     text,
     isGuess
   };
+  if (r === 0) chain.originalResponse = text;
   chain.contributorIds.add(socket.id);
   gs.submittedThisRound.add(socket.id);
   socket.emit('tel_link_accepted', {});
@@ -251,6 +262,7 @@ function endRound(room, io) {
       text: '[no response]',
       isGuess
     };
+    if (r === 0) chain.originalResponse = '[no response]';
     chain.contributorIds.add(playerId);
   }
 
@@ -288,8 +300,9 @@ function scheduleNextChainReveal(room, io) {
     chainIndex: gs.revealIdx,
     totalChains: gs.chains.length,
     chainId: chain.id,
-    starterName: chain.starterName,
-    prompt: chain.prompt,
+    metaPrompt: chain.metaPrompt,
+    originalResponse: chain.originalResponse,
+    starterName: rewriteLinks[0]?.playerName || chain.starterName,
     links: rewriteLinks.map(l => ({
       playerName: l.playerName,
       text: l.text,
@@ -322,7 +335,8 @@ function beginVote(room, io) {
     const guess = c.links[gs.config.totalRounds - 1]?.text || '';
     return {
       id: c.id,
-      prompt: c.prompt,
+      metaPrompt: c.metaPrompt,
+      originalResponse: c.originalResponse,
       finalLinkText: lastRewrite,
       guess
     };
@@ -376,7 +390,8 @@ function endVote(room, io) {
       const guess = c.links[gs.config.totalRounds - 1]?.text || '';
       return {
         id: c.id,
-        prompt: c.prompt,
+        metaPrompt: c.metaPrompt,
+        originalResponse: c.originalResponse,
         finalLinkText: lastRewrite,
         guess,
         votes: counts[c.id] || 0,

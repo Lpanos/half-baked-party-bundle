@@ -514,6 +514,20 @@ h2 {
 }
 .tel-reveal-card.shown { opacity: 1; transform: translateY(0); }
 .tel-reveal-card.original { border-color: var(--gold); background: #1f1c10; }
+
+.tel-reveal-meta {
+  font-size: 1rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.4rem;
+  border-bottom: 1px dashed var(--bg-deep);
+  text-align: center;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.tel-reveal-meta.shown { opacity: 1; }
+.tel-reveal-meta em { color: var(--gold); font-style: italic; }
 .tel-reveal-card.guess { border-color: var(--purple); background: #1c1530; }
 .tel-reveal-card .tel-reveal-author {
   font-size: 0.85rem;
@@ -556,6 +570,12 @@ h2 {
   letter-spacing: 0.1em;
   margin-bottom: 0.4rem;
 }
+.tel-vote-chain-card .tel-vote-meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+.tel-vote-chain-card .tel-vote-meta em { color: var(--gold); font-style: italic; }
 .tel-vote-chain-card .tel-vote-original {
   font-size: 1rem;
   color: var(--text-muted);
@@ -589,6 +609,12 @@ h2 {
   box-shadow: 0 0 20px rgba(240, 192, 64, 0.3);
 }
 .tel-set-result-card.shutout { border-color: var(--gold); background: #1f1c10; }
+.tel-set-result-card .tel-set-meta-prompt {
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  margin-bottom: 0.3rem;
+}
+.tel-set-result-card .tel-set-meta-prompt em { color: var(--gold); font-style: italic; }
 .tel-set-result-card .tel-set-original { font-size: 0.95rem; color: var(--text-muted); font-style: italic; }
 .tel-set-result-card .tel-set-final { font-size: 1.1rem; color: var(--gold); font-weight: 700; margin-top: 0.3rem; }
 .tel-set-result-card .tel-set-meta { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.3rem; }

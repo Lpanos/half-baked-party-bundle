@@ -24,7 +24,10 @@
       const screen = isGuess ? 'screen-tel-guess' : 'screen-tel-write';
 
       if (isGuess) {
+        // Final round: reconstruct what Player 1 ORIGINALLY wrote.
         document.getElementById('tel-guess-final-text').textContent = previousText || '[no response]';
+        document.getElementById('tel-guess-final-text-label').textContent = 'The chain ended with:';
+        document.getElementById('tel-guess-task-label').textContent = 'What did the first player ORIGINALLY write?';
         document.getElementById('tel-guess-word-limit-label').textContent = `${wordLimit} WORDS`;
         document.getElementById('tel-guess-word-max').textContent = wordLimit;
         document.getElementById('tel-guess-word-count').textContent = '0';
@@ -38,8 +41,17 @@
       } else {
         document.getElementById('tel-write-link-info').textContent = `Round ${roundNum} of ${totalRounds}`;
         document.getElementById('tel-write-word-limit-label').textContent = `${wordLimit} WORDS`;
-        document.getElementById('tel-write-prompt-label').textContent =
-          isFirstRound ? 'Original prompt — describe it:' : 'Previous link wrote:';
+        if (isFirstRound) {
+          // Round 0: meta-prompt creative direction; player writes their own response.
+          document.getElementById('tel-write-prompt-label').textContent = 'Your prompt:';
+          document.getElementById('tel-write-task-label').textContent = `Your answer (${wordLimit} words or fewer):`;
+          document.getElementById('tel-prev-text').classList.add('tel-meta-prompt');
+        } else {
+          // Mid-chain: rewrite the previous player's text. Never see the meta-prompt.
+          document.getElementById('tel-write-prompt-label').textContent = 'Previous player wrote:';
+          document.getElementById('tel-write-task-label').textContent = 'Rewrite in fewer words:';
+          document.getElementById('tel-prev-text').classList.remove('tel-meta-prompt');
+        }
         document.getElementById('tel-prev-text').textContent = previousText;
         document.getElementById('tel-word-max').textContent = wordLimit;
         document.getElementById('tel-word-count').textContent = '0';

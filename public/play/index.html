@@ -228,9 +228,9 @@
         <span id="tel-write-link-info"></span>
         <span id="tel-write-word-limit-label" class="highlight"></span>
       </div>
-      <p class="prompt-label" id="tel-write-prompt-label">Previous link wrote:</p>
+      <p class="prompt-label" id="tel-write-prompt-label">Previous player wrote:</p>
       <p class="prompt tel-prev-text" id="tel-prev-text"></p>
-      <p class="prompt-label">Rewrite in fewer words:</p>
+      <p class="prompt-label" id="tel-write-task-label">Rewrite in fewer words:</p>
       <textarea id="tel-input-answer" rows="3" placeholder="Type your version..."></textarea>
       <p class="word-count"><span id="tel-word-count">0</span>/<span id="tel-word-max">20</span> words</p>
       <div class="timer" id="tel-write-timer"></div>
@@ -245,12 +245,12 @@
     </div>
     <div id="screen-tel-guess" class="screen">
       <div class="write-header">
-        <span>Final guess</span>
+        <span>Final round</span>
         <span class="highlight" id="tel-guess-word-limit-label"></span>
       </div>
-      <p class="prompt-label">Final fragment:</p>
+      <p class="prompt-label" id="tel-guess-final-text-label">The chain ended with:</p>
       <p class="prompt tel-prev-text" id="tel-guess-final-text"></p>
-      <p class="prompt-label">Guess the original prompt:</p>
+      <p class="prompt-label" id="tel-guess-task-label">What did the first player ORIGINALLY write?</p>
       <textarea id="tel-guess-answer" rows="3" placeholder="Your best guess..."></textarea>
       <p class="word-count"><span id="tel-guess-word-count">0</span>/<span id="tel-guess-word-max">20</span> words</p>
       <div class="timer" id="tel-guess-timer"></div>

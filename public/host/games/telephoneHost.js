@@ -63,16 +63,19 @@
       revealTimers = [];
     }
 
-    socket.on('tel_reveal_chain', ({ chainIndex, totalChains, prompt, links, guess }) => {
+    socket.on('tel_reveal_chain', ({ chainIndex, totalChains, metaPrompt, originalResponse, links, guess }) => {
       clearRevealTimers();
       document.getElementById('tel-reveal-counter').textContent =
         `Chain ${chainIndex + 1} of ${totalChains}`;
       const stack = document.getElementById('tel-reveal-stack');
 
+      // The meta-prompt is small context, not a chain link. Render it as a
+      // header strip above the chain. Then the chain starts with the
+      // originator's 12-word response (links[0]).
       const cards = [];
-      cards.push(buildCard({ kind: 'original', author: 'Original prompt', text: prompt }));
-      links.forEach((l) => {
-        cards.push(buildArrow());
+      cards.push(buildMetaHeader(metaPrompt));
+      links.forEach((l, i) => {
+        if (i > 0) cards.push(buildArrow());
         cards.push(buildCard({
           kind: 'link',
           author: `${l.playerName} (${l.wordLimit} words)`,
@@ -85,6 +88,12 @@
           kind: 'guess',
           author: `${guess.playerName} guessed`,
           text: guess.text || '[no response]'
+        }));
+        // Comparison: show the originator's response again next to the guess.
+        cards.push(buildCard({
+          kind: 'original-was',
+          author: 'Original was',
+          text: originalResponse || (links[0] && links[0].text) || '[no response]'
         }));
       }
       stack.innerHTML = cards.join('');
@@ -104,13 +113,18 @@
     });
 
     function buildCard({ kind, author, text }) {
-      const cls = kind === 'original' ? 'original' : (kind === 'guess' ? 'guess' : '');
+      let cls = '';
+      if (kind === 'guess') cls = 'guess';
+      else if (kind === 'original-was') cls = 'original';
       return `<div class="tel-reveal-card ${cls}">
         <div class="tel-reveal-author">${esc(author)}</div>
         <div class="tel-reveal-text">${esc(text)}</div>
       </div>`;
     }
     function buildArrow() { return `<div class="tel-reveal-arrow shown">↓</div>`; }
+    function buildMetaHeader(text) {
+      return `<div class="tel-reveal-meta">Prompt: <em>"${esc(text)}"</em></div>`;
+    }
 
     // ---- Voting ----
     socket.on('tel_vote_phase', ({ chains, timer }) => {
@@ -118,8 +132,9 @@
       document.getElementById('tel-vote-summary').innerHTML = chains.map((c, i) =>
         `<div class="tel-vote-chain-card">
           <div class="tel-vote-label">Chain ${i + 1}</div>
-          <div class="tel-vote-original">"${esc(c.prompt)}"</div>
-          <div class="tel-vote-arrow">↓</div>
+          <div class="tel-vote-meta">Prompt: <em>"${esc(c.metaPrompt)}"</em></div>
+          <div class="tel-vote-original">"${esc(c.originalResponse || '[no response]')}"</div>
+          <div class="tel-vote-arrow">↓ became ↓</div>
           <div class="tel-vote-final">${esc(c.finalLinkText || '[no response]')}</div>
           ${c.guess ? `<div class="tel-vote-guess">Guess: "${esc(c.guess)}"</div>` : ''}
         </div>`
@@ -137,7 +152,8 @@
         else if (c.isWinner) cls.push('winner');
         const ptsLabel = c.isWinner ? `+${c.isShutout ? 750 : 500} per member` : '0 pts';
         return `<div class="${cls.join(' ')}">
-          <div class="tel-set-original">"${esc(c.prompt)}"</div>
+          <div class="tel-set-meta-prompt">Prompt: <em>"${esc(c.metaPrompt)}"</em></div>
+          <div class="tel-set-original">"${esc(c.originalResponse || '[no response]')}"</div>
           <div class="tel-set-final">${esc(c.finalLinkText || '[no response]')}</div>
           <div class="tel-set-meta">${c.votes} vote${c.votes !== 1 ? 's' : ''} · <span class="tel-set-pts">${ptsLabel}</span></div>
           <div class="tel-set-meta">${c.memberNames.map(n => esc(n)).join(', ')}</div>
