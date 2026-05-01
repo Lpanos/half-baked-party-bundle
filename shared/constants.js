@@ -60,6 +60,45 @@ const FK = {
   MATCHUP_RESULTS_PAUSE: 4000
 };
 
+// --- Telephone ---
+const TEL = {
+  PHASES: {
+    ASSIGN:   'tel_ASSIGN',
+    WRITE:    'tel_WRITE',
+    GUESS:    'tel_GUESS',
+    REVEAL:   'tel_REVEAL',
+    VOTE:     'tel_VOTE',
+    SET_END:  'tel_SET_END'
+  },
+  // Word limits keyed by chain length. Each entry is the schedule for links
+  // 1..N. The first link writes from the original prompt; subsequent links
+  // see only the previous link's text.
+  WORD_LIMITS: {
+    3: [20, 10, 4],
+    4: [20, 12, 6, 2],
+    5: [20, 12, 7, 4, 2]
+  },
+  // Per-link write timer in seconds. Same indexing as WORD_LIMITS.
+  WRITE_TIMERS: {
+    3: [30, 25, 15],
+    4: [30, 25, 20, 15],
+    5: [30, 25, 20, 15, 10]
+  },
+  GUESS_TIMER: 30,
+  GUESS_WORD_LIMIT: 20,
+  VOTE_TIMER: 15,
+  ASSIGN_PAUSE: 3000,
+  REVEAL_LINK_PAUSE: 3000,    // ms between consecutive links in a chain
+  REVEAL_GUESS_PAUSE: 5000,   // ms after the guess before next chain
+  REVEAL_INTER_CHAIN_PAUSE: 2000,
+  SET_END_PAUSE: 6000,
+  SETS_PER_GAME: 3,
+  MIN_PLAYERS: 3,
+  MAX_PLAYERS: 16,
+  WIN_POINTS: 500,
+  SHUTOUT_POINTS: 750
+};
+
 // --- Shutterbox (placeholder for Pass 2) ---
 const SB = {
   PHASES: {
@@ -97,11 +136,11 @@ const GAME_META = [
   { id: 'wordBudget',  name: 'WORD BUDGET',  blurb: 'Shrinking word limits',  minPlayers: WB.MIN_PLAYERS, available: true,  color: '#4ecca3' },
   { id: 'shutterbox',  name: 'SHUTTERBOX',   blurb: 'Photo party game',       minPlayers: SB.MIN_PLAYERS, available: true,  color: '#f0a500' },
   { id: 'frankenstein',name: 'FRANKENSTEIN', blurb: 'Remix fragments',        minPlayers: FK.MIN_PLAYERS, available: true,  color: '#e94560' },
-  { id: 'telephone',   name: 'TELEPHONE',    blurb: 'Shrinking telephone',    minPlayers: 3,              available: false, color: '#7e57c2' }
+  { id: 'telephone',   name: 'TELEPHONE',    blurb: 'Whispers down the chain',minPlayers: TEL.MIN_PLAYERS,available: true,  color: '#7e57c2' }
 ];
 
 const ALL = {
-  LOBBY_PHASES, ROOM_LIMITS, WB, FK, SB, SCORING, GAME_META
+  LOBBY_PHASES, ROOM_LIMITS, WB, FK, SB, TEL, SCORING, GAME_META
 };
 
 if (typeof module !== 'undefined' && module.exports) {

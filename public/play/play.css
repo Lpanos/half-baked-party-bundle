@@ -357,3 +357,48 @@ textarea {
 .sb-final-rank .sb-final-info { flex: 1; text-align: left; }
 .sb-final-rank .sb-final-info .name { font-weight: 700; }
 .sb-final-rank .sb-final-info .pts { color: var(--success); font-weight: 700; }
+
+/* --- Telephone player --- */
+.tel-prev-text {
+  background: var(--bg-surface);
+  border-left: 4px solid var(--purple);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  font-style: italic;
+  color: var(--text-primary);
+  text-align: left;
+  max-width: 400px;
+  margin-bottom: 1rem;
+  word-break: break-word;
+}
+
+.tel-vote-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 1rem;
+}
+.tel-vote-option {
+  background: var(--bg-surface);
+  border: 2px solid var(--bg-deep);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text-primary);
+  transition: border-color 0.2s, transform 0.08s;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+}
+.tel-vote-option:active { transform: scale(0.98); border-color: var(--gold); }
+.tel-vote-option .tel-vote-original {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 0.3rem;
+}
+.tel-vote-option .tel-vote-arrow { color: var(--text-faint); font-size: 0.85rem; }
+.tel-vote-option .tel-vote-final { font-weight: 700; color: var(--gold); }

@@ -216,6 +216,50 @@
       <button id="sb-final-results-next" class="btn-primary sb-next-btn">CROWN THE WINNER</button>
     </div>
 
+    <!-- Telephone host screens -->
+    <div id="screen-tel-assign" class="screen tel-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="tel-assign-room"></span>
+        <span class="round-info" id="tel-assign-set"></span>
+      </div>
+      <h1>TELEPHONE</h1>
+      <p class="subtitle">whispers down the chain</p>
+      <p class="status">Assigning chains...</p>
+      <div id="tel-assign-summary" class="tel-assign-summary"></div>
+    </div>
+    <div id="screen-tel-progress" class="screen tel-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="tel-progress-room"></span>
+        <span class="round-info" id="tel-progress-set"></span>
+      </div>
+      <h2>Chains in progress...</h2>
+      <div id="tel-chain-bars" class="tel-chain-bars"></div>
+    </div>
+    <div id="screen-tel-reveal" class="screen tel-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="tel-reveal-room"></span>
+        <span id="tel-reveal-counter"></span>
+      </div>
+      <div id="tel-reveal-stack" class="tel-reveal-stack"></div>
+    </div>
+    <div id="screen-tel-vote" class="screen tel-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="tel-vote-room"></span>
+      </div>
+      <h2>Which chain was funniest?</h2>
+      <div id="tel-vote-summary" class="tel-vote-summary"></div>
+      <div class="timer" id="tel-vote-timer"></div>
+      <p class="vote-cta">VOTE ON YOUR PHONES</p>
+    </div>
+    <div id="screen-tel-set-end" class="screen tel-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="tel-set-end-room"></span>
+      </div>
+      <h2 id="tel-set-end-title">Set Complete</h2>
+      <div id="tel-set-results" class="tel-set-results"></div>
+      <div id="tel-set-standings" class="standings"></div>
+    </div>
+
     <!-- POST-GAME (final scores + replay options) -->
     <div id="screen-final" class="screen">
       <h2>FINAL SCORES</h2>
@@ -235,6 +279,7 @@
   <script src="/host/games/wordBudgetHost.js"></script>
   <script src="/host/games/frankensteinHost.js"></script>
   <script src="/host/games/shutterboxHost.js"></script>
+  <script src="/host/games/telephoneHost.js"></script>
   <script src="/host/host.js"></script>
 </body>
 </html>

@@ -28,8 +28,8 @@ app.use('/shared', express.static(path.join(__dirname, '..', 'shared')));
 [
   './games/wordBudget',
   './games/frankenstein',
-  './games/shutterbox'
-  // telephone added later
+  './games/shutterbox',
+  './games/telephone'
 ].forEach(modPath => {
   try {
     const mod = require(modPath);

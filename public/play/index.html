@@ -217,6 +217,66 @@
       <p class="waiting">Waiting for host...</p>
     </div>
 
+    <!-- TELEPHONE -->
+    <div id="screen-tel-assign" class="screen">
+      <h2>TELEPHONE</h2>
+      <p class="waiting" id="tel-assign-sub">Set 1 — chains forming...</p>
+      <p class="status" id="tel-assign-position"></p>
+    </div>
+    <div id="screen-tel-write" class="screen">
+      <div class="write-header">
+        <span id="tel-write-link-info"></span>
+        <span id="tel-write-word-limit-label" class="highlight"></span>
+      </div>
+      <p class="prompt-label" id="tel-write-prompt-label">Previous link wrote:</p>
+      <p class="prompt tel-prev-text" id="tel-prev-text"></p>
+      <p class="prompt-label">Rewrite in fewer words:</p>
+      <textarea id="tel-input-answer" rows="3" placeholder="Type your version..."></textarea>
+      <p class="word-count"><span id="tel-word-count">0</span>/<span id="tel-word-max">20</span> words</p>
+      <div class="timer" id="tel-write-timer"></div>
+      <button id="tel-btn-submit" class="btn-primary">SUBMIT</button>
+      <p id="tel-write-error" class="error"></p>
+    </div>
+    <div id="screen-tel-waiting" class="screen">
+      <h2>TELEPHONE</h2>
+      <p class="waiting" id="tel-waiting-msg">Waiting for your turn...</p>
+      <p class="status" id="tel-waiting-position"></p>
+      <p style="font-size:3rem;margin-top:1rem;">⏳</p>
+    </div>
+    <div id="screen-tel-guess" class="screen">
+      <div class="write-header">
+        <span>Final guess</span>
+        <span class="highlight" id="tel-guess-word-limit-label"></span>
+      </div>
+      <p class="prompt-label">Final fragment:</p>
+      <p class="prompt tel-prev-text" id="tel-guess-final-text"></p>
+      <p class="prompt-label">Guess the original prompt:</p>
+      <textarea id="tel-guess-answer" rows="3" placeholder="Your best guess..."></textarea>
+      <p class="word-count"><span id="tel-guess-word-count">0</span>/<span id="tel-guess-word-max">20</span> words</p>
+      <div class="timer" id="tel-guess-timer"></div>
+      <button id="tel-btn-guess-submit" class="btn-primary">SUBMIT GUESS</button>
+      <p id="tel-guess-error" class="error"></p>
+    </div>
+    <div id="screen-tel-watching" class="screen">
+      <h2>Watch the chains...</h2>
+      <p class="waiting">Eyes on the host screen!</p>
+      <p id="tel-watching-current"></p>
+    </div>
+    <div id="screen-tel-vote" class="screen">
+      <h2>Pick the funniest chain</h2>
+      <div id="tel-vote-options" class="tel-vote-options"></div>
+      <div class="timer" id="tel-vote-timer"></div>
+    </div>
+    <div id="screen-tel-voted" class="screen">
+      <h2>Vote cast!</h2>
+      <p class="waiting">Waiting for results...</p>
+    </div>
+    <div id="screen-tel-set-end" class="screen">
+      <h2 id="tel-set-end-title">Set Complete</h2>
+      <p class="your-score" id="tel-set-end-your-score"></p>
+      <div id="tel-set-end-standings" class="standings"></div>
+    </div>
+
     <!-- ROUND/SET END (shared screens for both games) -->
     <div id="screen-round-end" class="screen">
       <h2 id="round-end-title"></h2>
@@ -241,6 +301,7 @@
   <script src="/play/games/wordBudgetPlay.js"></script>
   <script src="/play/games/frankensteinPlay.js"></script>
   <script src="/play/games/shutterboxPlay.js"></script>
+  <script src="/play/games/telephonePlay.js"></script>
   <script src="/play/play.js"></script>
 </body>
 </html>
