@@ -1,43 +1,57 @@
-// Telephone — player-side rendering. Owns `screen-tel-*`.
+// Telephone — player-side rendering. Owns `screen-tel-*`. Players are
+// active every write round; no waiting screens during writing. After each
+// submission they wait briefly for the round to advance.
 
 (function () {
   function init() {
     const { socket, getMyId, showFinal } = window.HBPlay;
     const { showScreen, esc, formatTime, countWords, renderStandings } = window.HBC;
 
-    let currentWordLimit = 20;
-    let currentGuessWordLimit = 20;
-    let currentChainId = '';
+    let currentWordLimit = 12;
 
-    // ---- ASSIGN ----
-    socket.on('tel_assign', ({ setNum, totalSets, chainLength, yourPosition }) => {
-      // Server emits a separate per-player payload to phones (no `chains` key).
-      if (chainLength === undefined) return;
-      document.getElementById('tel-assign-sub').textContent = `Set ${setNum} of ${totalSets} — chains forming...`;
-      document.getElementById('tel-assign-position').textContent =
-        chainLength > 0 ? `You are link ${yourPosition} of ${chainLength}` : '';
+    socket.on('tel_assign', ({ setNum, totalSets, totalRounds }) => {
+      // Phone payload is the small variant.
+      if (totalRounds === undefined) return;
+      document.getElementById('tel-assign-sub').textContent =
+        `Set ${setNum} of ${totalSets} — ${totalRounds} rounds incoming...`;
+      document.getElementById('tel-assign-position').textContent = '';
       showScreen('screen-tel-assign');
     });
 
-    // ---- Active turn ----
-    socket.on('tel_your_turn', ({ chainId, linkIndex, totalLinks, isFirstLink, previousText, wordLimit, timer }) => {
-      currentChainId = chainId;
+    // ---- Active round (rewrite OR guess; same screen, different label) ----
+    socket.on('tel_round_start', ({ roundNum, totalRounds, isGuess, isFirstRound, previousText, wordLimit, timer }) => {
       currentWordLimit = wordLimit;
-      document.getElementById('tel-write-link-info').textContent = `Link ${linkIndex + 1} of ${totalLinks}`;
-      document.getElementById('tel-write-word-limit-label').textContent = `${wordLimit} WORDS`;
-      document.getElementById('tel-write-prompt-label').textContent =
-        isFirstLink ? 'Original prompt:' : 'Previous link wrote:';
-      document.getElementById('tel-prev-text').textContent = previousText;
-      document.getElementById('tel-word-max').textContent = wordLimit;
-      document.getElementById('tel-word-count').textContent = '0';
-      const ta = document.getElementById('tel-input-answer');
-      ta.value = '';
-      ta.disabled = false;
-      document.getElementById('tel-btn-submit').disabled = false;
-      document.getElementById('tel-write-error').textContent = '';
-      document.querySelector('#screen-tel-write .word-count').classList.remove('over');
-      document.getElementById('tel-write-timer').textContent = formatTime(timer);
-      showScreen('screen-tel-write');
+      const screen = isGuess ? 'screen-tel-guess' : 'screen-tel-write';
+
+      if (isGuess) {
+        document.getElementById('tel-guess-final-text').textContent = previousText || '[no response]';
+        document.getElementById('tel-guess-word-limit-label').textContent = `${wordLimit} WORDS`;
+        document.getElementById('tel-guess-word-max').textContent = wordLimit;
+        document.getElementById('tel-guess-word-count').textContent = '0';
+        const gta = document.getElementById('tel-guess-answer');
+        gta.value = '';
+        gta.disabled = false;
+        document.getElementById('tel-btn-guess-submit').disabled = false;
+        document.getElementById('tel-guess-error').textContent = '';
+        document.querySelector('#screen-tel-guess .word-count').classList.remove('over');
+        document.getElementById('tel-guess-timer').textContent = formatTime(timer);
+      } else {
+        document.getElementById('tel-write-link-info').textContent = `Round ${roundNum} of ${totalRounds}`;
+        document.getElementById('tel-write-word-limit-label').textContent = `${wordLimit} WORDS`;
+        document.getElementById('tel-write-prompt-label').textContent =
+          isFirstRound ? 'Original prompt — describe it:' : 'Previous link wrote:';
+        document.getElementById('tel-prev-text').textContent = previousText;
+        document.getElementById('tel-word-max').textContent = wordLimit;
+        document.getElementById('tel-word-count').textContent = '0';
+        const ta = document.getElementById('tel-input-answer');
+        ta.value = '';
+        ta.disabled = false;
+        document.getElementById('tel-btn-submit').disabled = false;
+        document.getElementById('tel-write-error').textContent = '';
+        document.querySelector('#screen-tel-write .word-count').classList.remove('over');
+        document.getElementById('tel-write-timer').textContent = formatTime(timer);
+      }
+      showScreen(screen);
     });
 
     const ta = document.getElementById('tel-input-answer');
@@ -58,66 +72,11 @@
       socket.emit('tel_submit_link', { text });
     });
 
-    socket.on('tel_link_accepted', () => {
-      document.getElementById('tel-waiting-msg').textContent = 'Submitted! Waiting for the rest of the chain...';
-      document.getElementById('tel-waiting-position').textContent = '';
-      showScreen('screen-tel-waiting');
-    });
-
-    // ---- Waiting (pending or other-chains-still-running) ----
-    socket.on('tel_waiting', ({ chainId, reason, yourPosition, totalLinks, activeLinkIndex, guessPending }) => {
-      const msgEl = document.getElementById('tel-waiting-msg');
-      const posEl = document.getElementById('tel-waiting-position');
-      if (reason === 'pending') {
-        msgEl.textContent = 'Waiting for your turn...';
-        posEl.textContent = `You are link ${yourPosition} of ${totalLinks} (currently on link ${activeLinkIndex + 1})`;
-      } else if (reason === 'submitted') {
-        if (guessPending) msgEl.textContent = 'Submitted! Waiting for the final guess...';
-        else msgEl.textContent = 'Submitted! Waiting for the rest of the chain...';
-        posEl.textContent = '';
-      } else {
-        msgEl.textContent = 'Waiting...';
-        posEl.textContent = '';
-      }
-      showScreen('screen-tel-waiting');
-    });
-
-    // ---- Per-link timer (only sent to active player or guesser) ----
-    socket.on('tel_link_timer', ({ secondsLeft }) => {
-      // Find the timer in whichever screen is active (tel-write or tel-guess).
-      const text = formatTime(secondsLeft);
-      ['tel-write-timer', 'tel-guess-timer'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el && el.closest('.screen.active')) {
-          el.textContent = text;
-          el.classList.toggle('urgent', secondsLeft <= 5);
-        }
-      });
-    });
-
-    // ---- GUESS phase ----
-    socket.on('tel_guess_phase', ({ chainId, finalText, wordLimit, timer }) => {
-      currentChainId = chainId;
-      currentGuessWordLimit = wordLimit;
-      document.getElementById('tel-guess-final-text').textContent = finalText || '[no response]';
-      document.getElementById('tel-guess-word-limit-label').textContent = `${wordLimit} WORDS`;
-      document.getElementById('tel-guess-word-max').textContent = wordLimit;
-      document.getElementById('tel-guess-word-count').textContent = '0';
-      const gta = document.getElementById('tel-guess-answer');
-      gta.value = '';
-      gta.disabled = false;
-      document.getElementById('tel-btn-guess-submit').disabled = false;
-      document.getElementById('tel-guess-error').textContent = '';
-      document.querySelector('#screen-tel-guess .word-count').classList.remove('over');
-      document.getElementById('tel-guess-timer').textContent = formatTime(timer);
-      showScreen('screen-tel-guess');
-    });
-
     const gta = document.getElementById('tel-guess-answer');
     gta.addEventListener('input', () => {
       const count = countWords(gta.value);
       document.getElementById('tel-guess-word-count').textContent = count;
-      const over = count > currentGuessWordLimit;
+      const over = count > currentWordLimit;
       document.querySelector('#screen-tel-guess .word-count').classList.toggle('over', over);
       document.getElementById('tel-btn-guess-submit').disabled = over || count === 0;
     });
@@ -125,19 +84,20 @@
     document.getElementById('tel-btn-guess-submit').addEventListener('click', () => {
       const text = gta.value.trim();
       if (!text) { document.getElementById('tel-guess-error').textContent = 'Take a guess!'; return; }
-      if (countWords(text) > currentGuessWordLimit) return;
+      if (countWords(text) > currentWordLimit) return;
       document.getElementById('tel-btn-guess-submit').disabled = true;
       gta.disabled = true;
-      socket.emit('tel_submit_guess', { text });
+      // Reuse the same submit event — server treats the last round as a guess.
+      socket.emit('tel_submit_link', { text });
     });
 
-    socket.on('tel_guess_accepted', () => {
-      document.getElementById('tel-waiting-msg').textContent = 'Guess locked in! Watching the reveal...';
+    socket.on('tel_link_accepted', () => {
+      document.getElementById('tel-waiting-msg').textContent = 'Submitted! Waiting for the rest of the room...';
       document.getElementById('tel-waiting-position').textContent = '';
       showScreen('screen-tel-waiting');
     });
 
-    // ---- Reveal: phones just show "watch the host" ----
+    // ---- Reveal: phones show "watch the host" ----
     socket.on('tel_reveal_begin', () => {
       document.getElementById('tel-watching-current').textContent = '';
       showScreen('screen-tel-watching');
@@ -171,7 +131,6 @@
 
     socket.on('tel_vote_accepted', () => {});
 
-    // ---- SET END ----
     socket.on('tel_set_end', ({ setNum, totalSets, standings, yourScore }) => {
       document.getElementById('tel-set-end-title').textContent =
         setNum < totalSets ? `Set ${setNum} of ${totalSets} Complete` : `Game Over!`;

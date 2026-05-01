@@ -60,37 +60,37 @@ const FK = {
   MATCHUP_RESULTS_PAUSE: 4000
 };
 
-// --- Telephone ---
+// --- Telephone (simultaneous rotation model) ---
+// Every player starts a chain. Each round, ALL players write at once; chains
+// rotate cyclically (chain = (playerPos - round + N) % N) so no player sees
+// their own chain. The last round is the guess phase.
 const TEL = {
   PHASES: {
-    ASSIGN:   'tel_ASSIGN',
-    WRITE:    'tel_WRITE',
-    GUESS:    'tel_GUESS',
-    REVEAL:   'tel_REVEAL',
-    VOTE:     'tel_VOTE',
-    SET_END:  'tel_SET_END'
+    ASSIGN:  'tel_ASSIGN',
+    WRITE:   'tel_WRITE',
+    REVEAL:  'tel_REVEAL',
+    VOTE:    'tel_VOTE',
+    SET_END: 'tel_SET_END'
   },
-  // Word limits keyed by chain length. Each entry is the schedule for links
-  // 1..N. The first link writes from the original prompt; subsequent links
-  // see only the previous link's text.
-  WORD_LIMITS: {
-    3: [20, 10, 4],
-    4: [20, 12, 6, 2],
-    5: [20, 12, 7, 4, 2]
+  // Rewrite-round word limits keyed by player count (the guess is separate).
+  // Limits SHRINK as the chain compresses.
+  REWRITE_WORD_LIMITS_BY_N: {
+    3: [12, 5],
+    4: [12, 8, 3],
+    5: [12, 8, 5, 3]
+    // 6+ uses 5's schedule (capped at 4 rewrite rounds)
   },
-  // Per-link write timer in seconds. Same indexing as WORD_LIMITS.
-  WRITE_TIMERS: {
-    3: [30, 25, 15],
-    4: [30, 25, 20, 15],
-    5: [30, 25, 20, 15, 10]
+  REWRITE_TIMERS_BY_N: {
+    3: [30, 20],
+    4: [30, 25, 15],
+    5: [30, 25, 20, 15]
   },
-  GUESS_TIMER: 30,
   GUESS_WORD_LIMIT: 20,
+  GUESS_TIMER: 30,
   VOTE_TIMER: 15,
   ASSIGN_PAUSE: 3000,
-  REVEAL_LINK_PAUSE: 3000,    // ms between consecutive links in a chain
-  REVEAL_GUESS_PAUSE: 5000,   // ms after the guess before next chain
-  REVEAL_INTER_CHAIN_PAUSE: 2000,
+  REVEAL_LINK_PAUSE: 2000,        // ms between cards inside a chain
+  REVEAL_INTER_CHAIN_PAUSE: 3000, // ms between chains
   SET_END_PAUSE: 6000,
   SETS_PER_GAME: 3,
   MIN_PLAYERS: 3,

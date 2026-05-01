@@ -1,63 +1,53 @@
-// Telephone — host-side rendering. Owns `screen-tel-*` and animates the chain
-// reveal client-side so the server doesn't have to manage per-link timing.
+// Telephone — host-side rendering. Simultaneous-rotation model: one big
+// progress bar / submission counter for the whole room (everyone is active
+// at once). Reveal animates one chain at a time with a 2-second per-card
+// stagger; server schedules the next chain.
 
 (function () {
   function init() {
     const { socket, showFinal } = window.HBHost;
     const { showScreen, esc, formatTime, renderStandings } = window.HBC;
 
-    // Map chainId -> latest tick info, used to render progress bars while
-    // links are in flight. Server only refreshes this on transitions plus
-    // a per-second tick — we don't store the active timer here.
-    const chainTicks = {};
-
+    // ---- ASSIGN ----
     socket.on('tel_assign', (payload) => {
-      // Host gets the full chain summary.
-      if (!payload.chains) return; // player payload — ignored on host
+      // Host gets `players` and `chainCount`; phones get a smaller payload.
+      if (!payload.players) return;
       document.getElementById('tel-assign-set').textContent =
         `Set ${payload.setNum} of ${payload.totalSets}`;
       const summary = document.getElementById('tel-assign-summary');
-      summary.innerHTML = payload.chains.map((c, i) =>
+      summary.innerHTML =
         `<div class="tel-assign-chain">
-          <strong>Chain ${i + 1} (${c.length} players)</strong>
-          ${c.players.map(p => esc(p.name)).join(' → ')}
-        </div>`
-      ).join('');
+          <strong>${payload.chainCount} chains, ${payload.totalRounds} rounds</strong>
+          ${payload.players.map(p => esc(p.name)).join(' · ')}
+        </div>`;
       showScreen('screen-tel-assign');
     });
 
-    socket.on('tel_chain_progress', ({ chains }) => {
+    // ---- WRITE round ----
+    socket.on('tel_round_start', ({ roundNum, totalRounds, isGuess, wordLimit, timer, totalPlayers }) => {
+      // Reuse the chain-progress screen as a single big "round in progress" view.
       const container = document.getElementById('tel-chain-bars');
-      container.innerHTML = chains.map((c, i) => {
-        const segs = [];
-        for (let s = 0; s < c.totalLinks; s++) {
-          let cls = '';
-          if (s < c.activeLinkIndex) cls = 'done';
-          else if (s === c.activeLinkIndex && !c.completed) cls = 'active';
-          segs.push(`<div class="tel-segment ${cls}"></div>`);
-        }
-        // Add an extra "guess" segment after links.
-        let guessCls = '';
-        if (c.hasGuess) guessCls = 'guess-done';
-        else if (c.guessPending) guessCls = 'guess-pending';
-        segs.push(`<div class="tel-segment ${guessCls}"></div>`);
-
-        let state;
-        if (c.completed && c.hasGuess) state = 'Done';
-        else if (c.guessPending) state = 'Guessing...';
-        else state = `Link ${Math.min(c.activeLinkIndex + 1, c.totalLinks)} of ${c.totalLinks}`;
-
-        return `<div class="tel-chain-bar">
-          <span class="tel-chain-label">Chain ${i + 1}</span>
-          <div class="tel-segments">${segs.join('')}</div>
-          <span class="tel-chain-state">${state}</span>
-        </div>`;
-      }).join('');
+      const label = isGuess
+        ? `Round ${roundNum} of ${totalRounds} — GUESS`
+        : `Round ${roundNum} of ${totalRounds} — REWRITE in ${wordLimit} words`;
+      container.innerHTML = `
+        <div class="tel-round-card">
+          <div class="tel-round-label">${esc(label)}</div>
+          <div class="timer" id="tel-round-timer">${esc(formatTime(timer))}</div>
+          <div class="tel-submission-line">
+            <span id="tel-submission-status">0 / ${totalPlayers} submitted</span>
+            <div class="progress-bar"><div class="progress-fill" id="tel-submission-progress" style="width:0%"></div></div>
+          </div>
+        </div>
+      `;
       showScreen('screen-tel-progress');
     });
 
-    socket.on('tel_chain_tick', ({ chainId, secondsLeft }) => {
-      chainTicks[chainId] = secondsLeft;
+    socket.on('tel_submission_update', ({ submitted, total }) => {
+      const status = document.getElementById('tel-submission-status');
+      const fill = document.getElementById('tel-submission-progress');
+      if (status) status.textContent = `${submitted} / ${total} submitted`;
+      if (fill) fill.style.width = `${total > 0 ? (submitted / total) * 100 : 0}%`;
     });
 
     // ---- Reveal animation ----
@@ -79,10 +69,9 @@
         `Chain ${chainIndex + 1} of ${totalChains}`;
       const stack = document.getElementById('tel-reveal-stack');
 
-      // Build all cards hidden. Then schedule them to "show" sequentially.
       const cards = [];
       cards.push(buildCard({ kind: 'original', author: 'Original prompt', text: prompt }));
-      links.forEach((l, i) => {
+      links.forEach((l) => {
         cards.push(buildArrow());
         cards.push(buildCard({
           kind: 'link',
@@ -100,15 +89,16 @@
       }
       stack.innerHTML = cards.join('');
 
+      // Stagger each card by 1500ms (visual). Server's next-chain timeout is
+      // independent and uses the constant in shared/constants.js.
       const items = stack.children;
       for (let i = 0; i < items.length; i++) {
         const t = setTimeout(() => {
           items[i].classList.add('shown');
-          // Auto-scroll the stack so newer items stay in view (purely visual).
           if (items[i].scrollIntoView) {
             try { items[i].scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch {}
           }
-        }, i * 1500); // visual stagger; the server's per-chain budget is separate
+        }, i * 1500);
         revealTimers.push(t);
       }
     });
