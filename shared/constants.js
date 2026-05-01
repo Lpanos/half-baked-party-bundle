@@ -95,7 +95,7 @@ const SCORING = {
 // --- Game registry metadata. The actual `init` is plugged in server-side. ---
 const GAME_META = [
   { id: 'wordBudget',  name: 'WORD BUDGET',  blurb: 'Shrinking word limits',  minPlayers: WB.MIN_PLAYERS, available: true,  color: '#4ecca3' },
-  { id: 'shutterbox',  name: 'SHUTTERBOX',   blurb: 'Caption the photo',      minPlayers: SB.MIN_PLAYERS, available: false, color: '#f0a500' },
+  { id: 'shutterbox',  name: 'SHUTTERBOX',   blurb: 'Photo party game',       minPlayers: SB.MIN_PLAYERS, available: true,  color: '#f0a500' },
   { id: 'frankenstein',name: 'FRANKENSTEIN', blurb: 'Remix fragments',        minPlayers: FK.MIN_PLAYERS, available: true,  color: '#e94560' },
   { id: 'telephone',   name: 'TELEPHONE',    blurb: 'Shrinking telephone',    minPlayers: 3,              available: false, color: '#7e57c2' }
 ];

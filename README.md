@@ -8,7 +8,7 @@ A Jackbox-style party pack: one host screen, one shared lobby, multiple games. P
 |---|---|---|
 | **Word Budget** | ✅ Live | Shrinking word limits (15 → 7 → 3 → 1) |
 | **Frankenstein** | ✅ Live | Stitch monster answers from each other's word fragments |
-| **Shutterbox** | 🚧 Coming soon | Caption the photo |
+| **Shutterbox** | ✅ Live | Photo party game — head-to-head matchups + Shutter Showdown |
 | **Telephone** | 🚧 Coming soon | Shrinking telephone — chain of paraphrases |
 
 ## Quick Start

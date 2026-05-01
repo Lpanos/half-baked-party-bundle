@@ -125,6 +125,97 @@
       <div id="fk-round-standings" class="standings"></div>
     </div>
 
+    <!-- Shutterbox host screens -->
+    <div id="screen-sb-round-intro" class="screen sb-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="sb-intro-room"></span>
+        <span class="round-info" id="sb-intro-round"></span>
+      </div>
+      <h1 id="sb-intro-title">SHUTTERBOX</h1>
+      <p class="subtitle" id="sb-intro-sub">get your photos ready</p>
+      <div class="flash-dialog" id="sb-intro-dialog"></div>
+    </div>
+    <div id="screen-sb-submit" class="screen sb-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="sb-submit-room"></span>
+        <span class="round-info" id="sb-submit-round"></span>
+      </div>
+      <h2>Pick your photo</h2>
+      <p class="status">Players are choosing photos...</p>
+      <div class="timer" id="sb-submit-timer"></div>
+      <p class="status" id="sb-submit-status">0/0 submitted</p>
+      <div class="progress-bar"><div class="progress-fill" id="sb-submit-progress"></div></div>
+    </div>
+    <div id="screen-sb-matchup" class="screen sb-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="sb-matchup-room"></span>
+        <span id="sb-matchup-counter"></span>
+      </div>
+      <p class="prompt-text" id="sb-matchup-prompt"></p>
+      <div class="sb-matchup-row">
+        <div class="sb-matchup-side" id="sb-matchup-left"></div>
+        <div class="vs-label">VS</div>
+        <div class="sb-matchup-side" id="sb-matchup-right"></div>
+      </div>
+      <div class="timer" id="sb-vote-timer"></div>
+      <p class="vote-cta">VOTE ON YOUR PHONES</p>
+      <div class="flash-dialog" id="sb-matchup-dialog"></div>
+    </div>
+    <div id="screen-sb-result" class="screen sb-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="sb-result-room"></span>
+      </div>
+      <p class="prompt-text" id="sb-result-prompt"></p>
+      <div class="sb-matchup-row">
+        <div class="sb-matchup-side" id="sb-result-left"></div>
+        <div class="sb-matchup-side" id="sb-result-right"></div>
+      </div>
+      <div class="sb-vote-bar">
+        <div class="sb-vote-bar-left"  id="sb-bar-left">50%</div>
+        <div class="sb-vote-bar-right" id="sb-bar-right">50%</div>
+      </div>
+      <div class="sb-shutout-badge hidden" id="sb-shutout-badge">SHUTOUT!</div>
+      <div class="flash-dialog" id="sb-result-dialog"></div>
+      <p class="hint">Press SPACE or click NEXT to continue</p>
+      <button id="sb-result-next" class="btn-primary sb-next-btn">NEXT</button>
+    </div>
+    <div id="screen-sb-scoreboard" class="screen sb-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="sb-scoreboard-room"></span>
+      </div>
+      <h2 id="sb-scoreboard-title">SCOREBOARD</h2>
+      <div id="sb-scoreboard-list" class="standings"></div>
+      <button id="sb-scoreboard-next" class="btn-primary sb-next-btn">NEXT ROUND</button>
+    </div>
+    <div id="screen-sb-final-submit" class="screen sb-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="sb-final-submit-room"></span>
+      </div>
+      <h1 class="sb-gold-header">⚡ SHUTTER SHOWDOWN ⚡</h1>
+      <p class="prompt-text" id="sb-final-prompt"></p>
+      <div class="timer" id="sb-final-submit-timer"></div>
+      <p class="status" id="sb-final-submit-status">0/0 submitted</p>
+      <div class="flash-dialog" id="sb-final-intro-dialog"></div>
+    </div>
+    <div id="screen-sb-final-vote" class="screen sb-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="sb-final-vote-room"></span>
+      </div>
+      <p class="prompt-text" id="sb-final-vote-prompt"></p>
+      <div class="timer" id="sb-final-vote-timer"></div>
+      <p class="vote-cta">VOTE ON YOUR PHONES</p>
+      <div id="sb-final-gallery" class="sb-gallery"></div>
+    </div>
+    <div id="screen-sb-final-results" class="screen sb-screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="sb-final-results-room"></span>
+      </div>
+      <h1 class="sb-gold-header">SHOWDOWN RESULTS</h1>
+      <div id="sb-final-rankings" class="sb-gallery"></div>
+      <div class="flash-dialog" id="sb-final-results-dialog"></div>
+      <button id="sb-final-results-next" class="btn-primary sb-next-btn">CROWN THE WINNER</button>
+    </div>
+
     <!-- POST-GAME (final scores + replay options) -->
     <div id="screen-final" class="screen">
       <h2>FINAL SCORES</h2>
@@ -143,6 +234,7 @@
   <script src="/shared/components.js"></script>
   <script src="/host/games/wordBudgetHost.js"></script>
   <script src="/host/games/frankensteinHost.js"></script>
+  <script src="/host/games/shutterboxHost.js"></script>
   <script src="/host/host.js"></script>
 </body>
 </html>

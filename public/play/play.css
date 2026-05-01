@@ -265,3 +265,95 @@ textarea {
 }
 .fragment-chip.sortable-ghost { opacity: 0.4; }
 .fragment-chip.sortable-chosen { border-color: #ffdf6e; }
+
+/* --- Shutterbox player (photo upload + matchup vote cards) --- */
+.sb-upload-area {
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
+  background: var(--bg-surface);
+  border: 3px dashed var(--bg-deep);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s;
+}
+.sb-upload-area:active { border-color: var(--gold); }
+.sb-upload-icon { font-size: 3.5rem; }
+.sb-upload-label { font-size: 1.1rem; color: var(--text-muted); font-weight: 600; }
+
+.sb-photo-preview {
+  width: 100%;
+  max-width: 320px;
+  max-height: 320px;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--bg-deep);
+  background: #000;
+  object-fit: contain;
+  margin: 0.5rem 0;
+}
+
+.sb-vote-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
+  max-width: 400px;
+}
+.sb-vote-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--bg-deep);
+  border-radius: var(--radius-md);
+  padding: 0.8rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: border-color 0.2s, transform 0.08s;
+  font-family: inherit;
+  color: var(--text-primary);
+  text-align: center;
+  width: 100%;
+}
+.sb-vote-card:active { transform: scale(0.98); border-color: var(--gold); }
+.sb-vote-card.selected { border-color: var(--gold); background: #1f2a4d; }
+.sb-vote-card img {
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  background: #000;
+  border-radius: var(--radius-sm);
+}
+.sb-vote-card .sb-card-name {
+  font-size: 0.95rem;
+  color: var(--gold);
+  font-weight: 700;
+  margin-top: 0.4rem;
+}
+
+.sb-final-rank {
+  background: var(--bg-surface);
+  border: 2px solid var(--bg-deep);
+  border-radius: var(--radius-md);
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+.sb-final-rank.first { border-color: var(--gold); }
+.sb-final-rank.second { border-color: var(--silver); }
+.sb-final-rank.third { border-color: var(--bronze); }
+.sb-final-rank img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: #000;
+}
+.sb-final-rank .sb-final-info { flex: 1; text-align: left; }
+.sb-final-rank .sb-final-info .name { font-weight: 700; }
+.sb-final-rank .sb-final-info .pts { color: var(--success); font-weight: 700; }

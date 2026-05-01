@@ -107,6 +107,39 @@ const log = (...a) => console.log('[smoke]', ...a);
       state.finalScores.fk = me ? me.score : 0;
     });
 
+    // --- Shutterbox hooks ---
+    state.gotSBGameEnd = false;
+    state.finalScores.sb = 0;
+    // 1x1 transparent PNG (data URL) — passes server's image-data validation.
+    const TINY_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR4nGNgAAIAAAUAAeImBZsAAAAASUVORK5CYII=';
+    sock.on('sb_prompt_assigned', () => {
+      sock.emit('sb_submit_photo', { imageData: TINY_PNG });
+    });
+    sock.on('sb_final_round_start', () => {
+      sock.emit('sb_submit_photo', { imageData: TINY_PNG });
+    });
+    sock.on('sb_vote_phase', ({ player1, player2 }) => {
+      // Vote for the first non-self player.
+      const p1id = player1?.id; const p2id = player2?.id;
+      if (!p1id || !p2id) return;
+      if (state.myId === p1id || state.myId === p2id) return; // can't vote own
+      sock.emit('sb_cast_vote', { votedForId: p1id });
+    });
+    sock.on('sb_final_reveal', ({ photos }) => {
+      const target = photos.find(ph => ph.playerId !== state.myId);
+      if (target) sock.emit('sb_cast_vote', { votedForId: target.playerId });
+    });
+    sock.on('sb_vote_result', () => {
+      // Host advances via sb_host_next; players are passive here.
+    });
+    sock.on('sb_scoreboard', () => {});
+    sock.on('sb_final_results', () => {});
+    sock.on('sb_game_end', ({ finalStandings }) => {
+      state.gotSBGameEnd = true;
+      const me = finalStandings.find(p => p.id === state.myId);
+      state.finalScores.sb = me ? me.score : 0;
+    });
+
     sock.emit('join_room', { code: roomCode, name: state.name });
     players.push(state);
     await delay(50);
@@ -159,6 +192,30 @@ const log = (...a) => console.log('[smoke]', ...a);
   log(`FK completed in ${((Date.now() - startedFK) / 1000).toFixed(1)}s`);
   log('  FK final scores:', players.map(p => `${p.name}=${p.finalScores.fk}`).join(', '));
 
+  // --- Pick Shutterbox next ---
+  await delay(500);
+  log('picking new game (Shutterbox)...');
+  host.emit('pick_new_game');
+  await delay(300);
+  host.emit('select_game', { gameId: 'shutterbox' });
+
+  // The host needs to advance Shutterbox at host-paced screens.
+  host.on('sb_vote_result', () => setTimeout(() => host.emit('sb_host_next'), 1500));
+  host.on('sb_scoreboard', () => setTimeout(() => host.emit('sb_host_next'), 1500));
+  host.on('sb_final_results', () => setTimeout(() => host.emit('sb_host_next'), 1500));
+
+  const startedSB = Date.now();
+  await new Promise((resolve) => {
+    const tick = () => {
+      if (players.every(p => p.gotSBGameEnd)) return resolve();
+      setTimeout(tick, 500);
+    };
+    tick();
+    setTimeout(resolve, 6 * 60 * 1000);
+  });
+  log(`SB completed in ${((Date.now() - startedSB) / 1000).toFixed(1)}s`);
+  log('  SB final scores:', players.map(p => `${p.name}=${p.finalScores.sb}`).join(', '));
+
   // --- Verifications ---
   log('--- VERIFICATIONS ---');
   const everyoneFinishedWB = players.every(p => p.gotWBGameEnd);
@@ -167,8 +224,10 @@ const log = (...a) => console.log('[smoke]', ...a);
   // FK scores should NOT include WB scores.
   const fkScoresLowerThanCombined = players.every(p => p.finalScores.fk < p.finalScores.wb + p.finalScores.fk + 1); // sanity
 
+  const everyoneFinishedSB = players.every(p => p.gotSBGameEnd);
   log('  everyone finished WB?', everyoneFinishedWB);
   log('  everyone finished FK?', everyoneFinishedFK);
+  log('  everyone finished SB?', everyoneFinishedSB);
   log('  no fragment leaks?    ', noLeaks);
   log('  errors:');
   for (const e of errors) console.log('    ', e);

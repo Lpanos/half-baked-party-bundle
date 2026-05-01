@@ -27,8 +27,9 @@ app.use('/shared', express.static(path.join(__dirname, '..', 'shared')));
 // --- Game registry. Register before sockets so dispatchGameEvent can route. ---
 [
   './games/wordBudget',
-  './games/frankenstein'
-  // shutterbox + telephone added in pass 2
+  './games/frankenstein',
+  './games/shutterbox'
+  // telephone added later
 ].forEach(modPath => {
   try {
     const mod = require(modPath);
