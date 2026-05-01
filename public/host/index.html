@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Half Baked — Host</title>
+  <link rel="stylesheet" href="/shared/shared.css">
+  <link rel="stylesheet" href="/host/host.css">
+</head>
+<body class="host-body">
+  <div id="app">
+
+    <!-- LOBBY (waiting for players) -->
+    <div id="screen-loading" class="screen active">
+      <h1>HALF BAKED</h1>
+      <p class="subtitle">party bundle</p>
+      <p class="status">Creating room...</p>
+    </div>
+
+    <div id="screen-lobby" class="screen">
+      <div class="room-badge" id="lobby-room-badge"></div>
+      <h1>HALF BAKED</h1>
+      <p class="subtitle">party bundle</p>
+      <p class="join-line">Join at: <strong id="join-url"></strong></p>
+      <p class="room-code-display">Room: <span id="lobby-code"></span></p>
+      <div id="player-list" class="player-grid"></div>
+      <p id="lobby-hint" class="hint">Need at least 2 players</p>
+    </div>
+
+    <!-- GAME SELECT -->
+    <div id="screen-game-select" class="screen">
+      <div class="top-bar">
+        <span class="room-badge-small" id="select-room-code"></span>
+        <span class="player-count-pill" id="select-player-count"></span>
+      </div>
+      <h1>PICK A GAME</h1>
+      <div id="game-cards" class="game-card-grid"></div>
+      <p class="hint">Tap a card to start</p>
+    </div>
+
+    <!-- GAME-SPECIFIC SCREENS -->
+    <!-- Word Budget host screens -->
+    <div id="screen-wb-write" class="screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="wb-write-room"></span>
+        <span class="round-info" id="wb-write-round"></span>
+      </div>
+      <p class="prompt-label">Round prompt:</p>
+      <div class="big-number" id="wb-word-limit"></div>
+      <p class="label">WORDS</p>
+      <div class="timer" id="wb-write-timer"></div>
+      <p class="status" id="wb-write-status">Waiting for answers...</p>
+      <div class="progress-bar"><div class="progress-fill" id="wb-write-progress"></div></div>
+    </div>
+    <div id="screen-wb-vote" class="screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="wb-vote-room"></span>
+        <span id="wb-matchup-counter"></span>
+      </div>
+      <p class="prompt-text" id="wb-vote-prompt"></p>
+      <div id="wb-answers" class="answers-row"></div>
+      <div class="timer" id="wb-vote-timer"></div>
+      <p class="vote-cta">VOTE NOW!</p>
+    </div>
+    <div id="screen-wb-result" class="screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="wb-result-room"></span>
+      </div>
+      <p class="prompt-text" id="wb-result-prompt"></p>
+      <div id="wb-results" class="answers-row"></div>
+    </div>
+    <div id="screen-wb-round-end" class="screen">
+      <h2 id="wb-round-end-title"></h2>
+      <div id="wb-round-standings" class="standings"></div>
+    </div>
+    <div id="screen-wb-set-end" class="screen">
+      <h2 id="wb-set-end-title"></h2>
+      <div id="wb-set-standings" class="standings"></div>
+    </div>
+
+    <!-- Frankenstein host screens -->
+    <div id="screen-fk-write" class="screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="fk-write-room"></span>
+        <span class="round-info" id="fk-write-round"></span>
+      </div>
+      <p class="prompt-label">Round prompt:</p>
+      <p class="prompt-text" id="fk-write-prompt"></p>
+      <div class="big-number" id="fk-write-word-limit"></div>
+      <p class="label">WORD LIMIT</p>
+      <div class="timer" id="fk-write-timer"></div>
+      <p class="status" id="fk-write-status">Waiting for answers...</p>
+      <div class="progress-bar"><div class="progress-fill" id="fk-write-progress"></div></div>
+    </div>
+    <div id="screen-fk-stitch" class="screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="fk-stitch-room"></span>
+        <span class="round-info" id="fk-stitch-round"></span>
+      </div>
+      <h2 class="stitch-headline">STITCHING TIME</h2>
+      <p class="status">Players are picking fragments and stitching monsters...</p>
+      <div class="timer" id="fk-stitch-timer"></div>
+      <p class="status" id="fk-stitch-status">0/0 stitched</p>
+      <div class="progress-bar"><div class="progress-fill" id="fk-stitch-progress"></div></div>
+    </div>
+    <div id="screen-fk-vote" class="screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="fk-vote-room"></span>
+        <span id="fk-matchup-counter"></span>
+      </div>
+      <p class="prompt-text" id="fk-vote-prompt"></p>
+      <div id="fk-answers" class="answers-row"></div>
+      <div class="timer" id="fk-vote-timer"></div>
+      <p class="vote-cta">VOTE NOW!</p>
+    </div>
+    <div id="screen-fk-result" class="screen">
+      <div class="top-bar">
+        <span class="room-badge-small game-badge" id="fk-result-room"></span>
+      </div>
+      <p class="prompt-text" id="fk-result-prompt"></p>
+      <div id="fk-results" class="answers-row"></div>
+    </div>
+    <div id="screen-fk-round-end" class="screen">
+      <h2 id="fk-round-end-title"></h2>
+      <div id="fk-round-standings" class="standings"></div>
+    </div>
+
+    <!-- POST-GAME (final scores + replay options) -->
+    <div id="screen-final" class="screen">
+      <h2>FINAL SCORES</h2>
+      <div id="podium" class="podium"></div>
+      <div id="final-standings" class="standings"></div>
+      <div class="post-game-actions">
+        <button id="btn-play-again" class="btn-primary">PLAY AGAIN</button>
+        <button id="btn-pick-new-game" class="btn-secondary">PICK NEW GAME</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/shared/constants.js"></script>
+  <script src="/shared/components.js"></script>
+  <script src="/host/games/wordBudgetHost.js"></script>
+  <script src="/host/games/frankensteinHost.js"></script>
+  <script src="/host/host.js"></script>
+</body>
+</html>

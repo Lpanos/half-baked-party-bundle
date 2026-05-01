@@ -1,0 +1,262 @@
+/* Host-side TV-screen styles. Layered on top of /shared/shared.css. */
+
+body.host-body {
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+}
+
+.screen {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 2rem;
+  text-align: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+h1 {
+  font-size: 4rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+}
+h2 {
+  font-size: 2.6rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+.subtitle {
+  font-size: 1.4rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  letter-spacing: 0.02em;
+}
+.join-line { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+.join-line strong { color: var(--text-primary); }
+
+.room-code-display {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: var(--gold);
+}
+
+.room-badge, .room-badge-small {
+  background: var(--gold);
+  color: var(--bg-primary);
+  font-weight: 800;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+.room-badge {
+  font-size: 1.2rem;
+  padding: 0.3rem 1rem;
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+.room-badge-small { font-size: 1rem; padding: 0.2rem 0.6rem; }
+
+.top-bar {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  right: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.2rem;
+}
+
+.player-count-pill {
+  background: var(--bg-surface);
+  border: 1px solid var(--bg-deep);
+  border-radius: var(--radius-pill);
+  padding: 0.3rem 0.9rem;
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.player-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  max-width: 900px;
+}
+
+.hint { color: var(--text-faint); font-size: 1rem; margin-top: 0.5rem; }
+
+.prompt-label {
+  font-size: 1rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.4rem;
+}
+.prompt-text {
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  max-width: 1000px;
+  line-height: 1.3;
+}
+
+.round-info { color: var(--text-muted); }
+
+.big-number {
+  font-size: 6rem;
+  font-weight: 900;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.label {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+}
+
+.timer {
+  font-size: 3rem;
+  font-weight: 700;
+  margin: 1rem 0;
+}
+.timer.urgent { color: var(--accent); }
+
+.status {
+  font-size: 1.4rem;
+  color: var(--text-muted);
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  width: 400px;
+  max-width: 80%;
+  height: 12px;
+  background: var(--bg-surface);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 6px;
+  transition: width 0.3s;
+  width: 0%;
+}
+
+/* --- Voting / matchup answer cards --- */
+.answers-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+  width: 100%;
+  max-width: 1100px;
+}
+.answer-card {
+  background: var(--bg-surface);
+  border: 2px solid var(--bg-deep);
+  border-radius: var(--radius-lg);
+  padding: 1.6rem;
+  flex: 1;
+  min-width: 260px;
+  max-width: 420px;
+  font-size: 1.5rem;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+}
+.answer-card.winner-card {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px rgba(240, 192, 64, 0.3);
+}
+.answer-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+.answer-text { font-weight: 600; word-break: break-word; }
+.result-votes  { font-size: 1.1rem; color: var(--text-muted); margin-top: 0.8rem; }
+.result-author { font-size: 1rem;   color: var(--gold);       margin-top: 0.4rem; font-weight: 600; }
+.result-points { font-size: 1rem;   color: var(--success);    margin-top: 0.3rem; font-weight: 700; }
+
+.vote-cta {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent);
+  animation: pulse 1s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.stitch-headline {
+  color: var(--gold);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.3rem;
+}
+
+/* --- Final podium --- */
+#screen-final .standings { max-width: 600px; }
+
+.podium {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.podium-place {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 2rem;
+}
+.podium-bar {
+  width: 120px;
+  background: var(--bg-surface);
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1rem;
+}
+.podium-place.first  .podium-bar { height: 200px; background: var(--gold);   color: var(--bg-primary); }
+.podium-place.second .podium-bar { height: 150px; background: var(--silver); color: var(--bg-primary); }
+.podium-place.third  .podium-bar { height: 110px; background: var(--bronze); color: var(--bg-primary); }
+.podium-rank  { font-size: 2rem;   font-weight: 900; }
+.podium-name  { font-size: 1.2rem; font-weight: 700; margin-top: 0.5rem; }
+.podium-score { font-size: 1rem; }
+
+.post-game-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+.post-game-actions .btn-primary,
+.post-game-actions .btn-secondary {
+  padding: 0.9rem 2rem;
+  font-size: 1.3rem;
+}

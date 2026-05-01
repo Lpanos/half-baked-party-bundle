@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Half Baked — Play</title>
+  <link rel="stylesheet" href="/shared/shared.css">
+  <link rel="stylesheet" href="/play/play.css">
+</head>
+<body class="play-body">
+  <div id="app">
+
+    <!-- JOIN -->
+    <div id="screen-join" class="screen active">
+      <h1>HALF BAKED</h1>
+      <p class="tagline">party bundle</p>
+      <div class="form-group">
+        <label for="input-code">Room Code</label>
+        <input type="text" id="input-code" maxlength="4" autocapitalize="characters" autocomplete="off" placeholder="ABCD">
+      </div>
+      <div class="form-group">
+        <label for="input-name">Your Name</label>
+        <input type="text" id="input-name" maxlength="16" autocomplete="off" placeholder="Enter name">
+      </div>
+      <button id="btn-join" class="btn-primary">JOIN</button>
+      <p id="join-error" class="error"></p>
+    </div>
+
+    <!-- LOBBY (waiting / game-select status) -->
+    <div id="screen-lobby" class="screen">
+      <p class="room-info">Room: <span id="lobby-code" class="highlight"></span></p>
+      <h2 id="lobby-headline">You're in!</h2>
+      <p id="lobby-sub" class="waiting">Waiting for host to pick a game...</p>
+      <div id="lobby-players" class="player-list-mini"></div>
+    </div>
+
+    <!-- WORD BUDGET -->
+    <div id="screen-wb-write" class="screen">
+      <div class="write-header">
+        <span id="wb-round-info"></span>
+        <span id="wb-word-limit-label" class="highlight"></span>
+      </div>
+      <p class="prompt-label">Write your answer:</p>
+      <p class="prompt" id="wb-write-prompt"></p>
+      <textarea id="wb-input-answer" rows="3" placeholder="Type your answer..."></textarea>
+      <p class="word-count"><span id="wb-word-count">0</span>/<span id="wb-word-max">15</span> words</p>
+      <div class="timer" id="wb-write-timer"></div>
+      <button id="wb-btn-submit" class="btn-primary">SUBMIT</button>
+      <p id="wb-write-error" class="error"></p>
+    </div>
+    <div id="screen-wb-submitted" class="screen">
+      <h2>Submitted!</h2>
+      <p class="waiting">Waiting for other players...</p>
+      <div class="timer"></div>
+    </div>
+    <div id="screen-wb-vote" class="screen">
+      <p class="prompt-label">Vote for the best:</p>
+      <p class="prompt" id="wb-vote-prompt"></p>
+      <div id="wb-vote-options"></div>
+      <div class="timer" id="wb-vote-timer"></div>
+    </div>
+    <div id="screen-wb-own-matchup" class="screen">
+      <h2>YOUR MATCHUP</h2>
+      <p class="waiting">Sit back and watch the votes roll in...</p>
+      <div class="timer"></div>
+    </div>
+    <div id="screen-wb-voted" class="screen">
+      <h2>Vote cast!</h2>
+      <p class="waiting">Waiting for results...</p>
+    </div>
+    <div id="screen-wb-result" class="screen">
+      <p class="prompt" id="wb-result-prompt"></p>
+      <div id="wb-result-cards"></div>
+    </div>
+
+    <!-- FRANKENSTEIN -->
+    <div id="screen-fk-write" class="screen">
+      <div class="write-header">
+        <span id="fk-round-info"></span>
+        <span id="fk-word-limit-label" class="highlight"></span>
+      </div>
+      <p class="prompt-label">Write a sentence:</p>
+      <p class="prompt" id="fk-write-prompt"></p>
+      <textarea id="fk-input-answer" rows="3" placeholder="Type your answer..."></textarea>
+      <p class="word-count"><span id="fk-word-count">0</span>/<span id="fk-word-max">20</span> words</p>
+      <div class="timer" id="fk-write-timer"></div>
+      <button id="fk-btn-submit" class="btn-primary">SUBMIT</button>
+      <p id="fk-write-error" class="error"></p>
+    </div>
+    <div id="screen-fk-submitted" class="screen">
+      <h2>Submitted!</h2>
+      <p class="waiting">Waiting for fragments...</p>
+      <div class="timer"></div>
+    </div>
+    <div id="screen-fk-stitch" class="screen">
+      <div class="write-header">
+        <span id="fk-stitch-round-info"></span>
+        <span id="fk-stitch-fragment-count" class="highlight"></span>
+      </div>
+      <p class="prompt-label">Stitch an answer:</p>
+      <p class="prompt" id="fk-stitch-prompt"></p>
+      <div class="assembly-row" id="fk-assembly-row">
+        <p class="assembly-placeholder">Tap chips below to stitch your answer</p>
+      </div>
+      <div class="assembly-actions">
+        <button id="fk-btn-undo" class="btn-secondary" disabled>UNDO</button>
+        <button id="fk-btn-clear" class="btn-secondary" disabled>CLEAR</button>
+      </div>
+      <div class="fragment-pool" id="fk-fragment-pool"></div>
+      <div class="timer" id="fk-stitch-timer"></div>
+      <button id="fk-btn-stitch-submit" class="btn-primary" disabled>SUBMIT</button>
+      <p id="fk-stitch-error" class="error"></p>
+    </div>
+    <div id="screen-fk-stitched" class="screen">
+      <h2>Stitched!</h2>
+      <p class="waiting">Waiting for other monsters...</p>
+      <div class="timer"></div>
+    </div>
+    <div id="screen-fk-vote" class="screen">
+      <p class="prompt-label">Best monster wins:</p>
+      <p class="prompt" id="fk-vote-prompt"></p>
+      <div id="fk-vote-options"></div>
+      <div class="timer" id="fk-vote-timer"></div>
+    </div>
+    <div id="screen-fk-own-matchup" class="screen">
+      <h2>YOUR MONSTER</h2>
+      <p class="waiting">Sit back and watch the votes roll in...</p>
+      <div class="timer"></div>
+    </div>
+    <div id="screen-fk-voted" class="screen">
+      <h2>Vote cast!</h2>
+      <p class="waiting">Waiting for results...</p>
+    </div>
+    <div id="screen-fk-result" class="screen">
+      <p class="prompt" id="fk-result-prompt"></p>
+      <div id="fk-result-cards"></div>
+    </div>
+
+    <!-- ROUND/SET END (shared screens for both games) -->
+    <div id="screen-round-end" class="screen">
+      <h2 id="round-end-title"></h2>
+      <p class="your-score" id="round-end-your-score"></p>
+      <div id="round-end-standings" class="standings"></div>
+    </div>
+
+    <!-- FINAL SCORES (post-game on phone) -->
+    <div id="screen-final" class="screen">
+      <h2>FINAL SCORES</h2>
+      <p class="your-score" id="phone-final-score"></p>
+      <div id="phone-final-standings" class="standings"></div>
+      <p class="waiting">Waiting for host...</p>
+    </div>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="/shared/constants.js"></script>
+  <script src="/shared/components.js"></script>
+  <script src="/play/games/wordBudgetPlay.js"></script>
+  <script src="/play/games/frankensteinPlay.js"></script>
+  <script src="/play/play.js"></script>
+</body>
+</html>
